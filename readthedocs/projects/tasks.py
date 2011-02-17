@@ -92,6 +92,18 @@ def update_imported_docs(project, version):
         print 'Updating to latest revision'
         project.vcs_repo.update()
 
+    if version:
+        version_slug = version.slug
+    else:
+        version_slug = 'latest'
+    #Do Virtualenv bits:
+    print run('virtualenv --no-site-packages %s' % project.venv_path(version=version_slug))
+    print run('%s install sphinx' % project.venv_bin(version=version_slug,
+                                                      bin='pip'))
+    os.chdir(project.user_checkout_path)
+    print run('%s setup.py install' % project.venv_bin(version=version_slug,
+                                                          bin='python'))
+
     # check tags/version
     try:
         if project.vcs_repo.supports_tags:
